@@ -1,17 +1,27 @@
 const net = require('net')
 
+const HAND_SHAKE = 'JDWP-Handshake'
+
 class JDWP {
 
   constructor() {
-    this.eventHandler = {}
+    this.eventStore = {}
+    this.events = {
+      CONNECT: Symbol(),
+      CLOSE: Symbol()
+    }
   }
 
   on(event, callback) {
-    this.eventHandler[event] = callback
+    this.eventStore[event] = callback
+  }
+
+  off(event) {
+    delete this.eventStore[event]
   }
 
   dispatch(event, option) {
-    const callback = this.eventHandler[event]
+    const callback = this.eventStore[event]
     if (callback) {
       callback.apply(option)
     }
@@ -25,15 +35,23 @@ class JDWP {
       throw new Error(`${port} is ${typeof port}. please set number.`)
     }
     this.client = net.connect({host: host, port: port}, () => {
-      // TODO use enum
-      this.dispatch('connect')
+      this.client.on('data', this.listen.bind(this))
+      this.client.write(HAND_SHAKE)
     })
+  }
+
+  listen(data) {
+    const dataString = data.toString()
+    if (dataString === HAND_SHAKE) {
+      this.dispatch(this.events.CONNECT)
+    } else {
+      // TODO
+    }
   }
 
   close() {
     this.client.on('close', () => {
-      // TODO use enum
-      this.dispatch('close')
+      this.dispatch(this.events.CLOSE)
     })
     this.client.destroy()
   }
