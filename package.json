@@ -2,7 +2,7 @@
   "name": "node-jdwp",
   "version": "0.0.1",
   "description": "This is Java(TM) Debug Wire Protocol wrapper library for node",
-  "main": "lib.js",
+  "main": "jdwp.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
