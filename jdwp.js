@@ -91,7 +91,7 @@ class JDWP {
 
   readString(data) {
     const contentLength = data.readUInt32BE(0)
-    return data.toString('utf-8', 4, contentLength - 4)
+    return data.toString('utf-8', 4, 4 + contentLength)
   }
 
   sendCommand(commandSet, command, body, callback) {
